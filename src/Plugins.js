@@ -7,6 +7,7 @@ const puppeteer = require('puppeteer')
  * @param {options.username} string username
  * @param {options.password} string password
  * @param {options.loginUrl} string password
+ * @param {potions.domain} string domain for Slack
  * @param {options.loginSelector} string a selector on the loginUrl page for the social provider button
  * @param {options.loginSelectorDelay} number delay a specific amount of time before clicking on the login button, defaults to 250ms. Pass a boolean false to avoid completely.
  * @param {options.postLoginSelector} string a selector on the app's post-login return page to assert that login is successful
@@ -37,6 +38,28 @@ module.exports.GoogleSocialLogin = async function GoogleSocialLogin(options = {}
   }
 }
 
+
+module.exports.SlackSocialLogin = async function SlackSocialLogin(options={}){
+  validateOptions(options)
+  const browser = await puppeteer.launch({headless: !!options.headless})
+  const page = await browser.newPage()
+  await page.setViewport({width: 1280, height: 800})
+
+  await page.goto(options.loginUrl)
+
+  await login({page, options})
+  await typeDomainforSlack({page, options})
+  await typeIdPasswordforSlack({page, options})
+
+  const cookies = await getCookies({page, options})
+
+  await finalizeSession({page, browser, options})
+
+
+  return {
+    cookies
+  }
+}
 function validateOptions(options) {
   if (!options.username || !options.password) {
     throw new Error('Username or Password missing for social login')
@@ -76,6 +99,24 @@ async function typePassword({page, options} = {}) {
   await page.waitForSelector('#passwordNext', {visible: true})
   await page.click('#passwordNext')
 }
+
+
+async function typeDomainforSlack({page, options} = {}) {
+  await page.waitForSelector('#domain', {visible: true})
+  await page.type('#domain', options.domain)
+  await page.waitForSelector('#submit_team_domain', {visible: true})
+  await page.click('#submit_team_domain')
+}
+async function typeIdPasswordforSlack({page, options} = {}) {
+  await page.waitForSelector('#email', {visible: true})
+  await page.waitForSelector('#password', {visible: true})
+  await page.type('#email', options.email)
+  await page.type('#password', options.password)
+  await page.waitForSelector('#signin_btn', {visible: true})
+  await page.click('#signin_btn')
+}
+
+
 
 async function getCookies({page, options} = {}) {
   await page.waitForSelector(options.postLoginSelector)

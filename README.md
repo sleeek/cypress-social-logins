@@ -21,6 +21,10 @@ This Cypress library makes it possible to perform third-party logins (think oaut
 
 It does so by delegating the login process to a `puppeteer` flow that performs the login and returns the cookies for the application under test so they can be set by the calling Cypress flow for the duration of the test.
 
+# Fork to sleeek
+
+Add provider for slack. 
+
 ## Support
 
 Supported identity providers:
