@@ -114,6 +114,8 @@ async function typeIdPasswordforSlack({page, options} = {}) {
   await page.type('#password', options.password)
   await page.waitForSelector('#signin_btn', {visible: true})
   await page.click('#signin_btn')
+  await page.waitForSelector('button[type="submit"]', {visible: true}) // button[data-qa="oauth_submit_button"]
+  await page.click('button[type="submit"]')
 }
 
 
