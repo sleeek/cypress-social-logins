@@ -6,7 +6,7 @@ const puppeteer = require('puppeteer')
  *
  * @param {options.username} string username
  * @param {options.password} string password
- * @param {options.loginUrl} string password
+ * @param {options.loginUrl} string loginURL
  * @param {potions.domain} string domain for Slack
  * @param {options.loginSelector} string a selector on the loginUrl page for the social provider button
  * @param {options.loginSelectorDelay} number delay a specific amount of time before clicking on the login button, defaults to 250ms. Pass a boolean false to avoid completely.
@@ -41,6 +41,7 @@ module.exports.GoogleSocialLogin = async function GoogleSocialLogin(options = {}
 }
 */
 module.exports.SlackSocialLogin = async function SlackSocialLogin(options={}){
+
   validateOptions(options)
   const browser = await puppeteer.launch({headless: !!options.headless})
   const page = await browser.newPage()
@@ -62,8 +63,8 @@ module.exports.SlackSocialLogin = async function SlackSocialLogin(options={}){
   }
 }
 function validateOptions(options) {
-  if (!options.username || !options.password) {
-    throw new Error('Username or Password missing for social login')
+  if (!options.email || !options.password) {
+    throw new Error('Email or Password missing for social login')
   }
 }
 
