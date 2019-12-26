@@ -16,6 +16,8 @@ const puppeteer = require('puppeteer')
  * @param {options.logs} boolean whether to log cookies and other metadata to console
  * @param {options.getAllBrowserCookies} boolean whether to get all browser cookies instead of just for the loginUrl
  */
+
+ /*
 module.exports.GoogleSocialLogin = async function GoogleSocialLogin(options = {}) {
   validateOptions(options)
 
@@ -37,8 +39,7 @@ module.exports.GoogleSocialLogin = async function GoogleSocialLogin(options = {}
     cookies
   }
 }
-
-
+*/
 module.exports.SlackSocialLogin = async function SlackSocialLogin(options={}){
   validateOptions(options)
   const browser = await puppeteer.launch({headless: !!options.headless})
