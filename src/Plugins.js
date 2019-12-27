@@ -118,6 +118,8 @@ async function typeIdPasswordforSlack({page, options} = {}) {
   await page.waitForSelector('#password', {visible: true})
   await page.type('#email', options.email)
   await page.type('#password', options.password)
+  await console.log("Email: "+options.email)
+  await console.log("Password: "+options.password)
   await page.waitForSelector('#signin_btn', {visible: true})
   await page.screenshot({path:'002-typeIdPasswordforSlack.png'})
   await page.click('#signin_btn')
