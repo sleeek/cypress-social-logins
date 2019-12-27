@@ -1,5 +1,6 @@
 <p align="center"><h1 align="center">
-  cypress-social-logins
+  cypress-social-logins for Slack   
+  (fork from <a href="https://github.com/lirantal/cypress-social-logins">https://github.com/lirantal/cypress-social-logins</a>)
 </h1>
 
 <p align="center">
@@ -17,13 +18,10 @@
 
 # About
 
-This Cypress library makes it possible to perform third-party logins (think oauth) for services such as GitHub, Google or Facebook.
+This Cypress library makes it possible to perform third-party logins (think oauth) for services such as Slack.
 
 It does so by delegating the login process to a `puppeteer` flow that performs the login and returns the cookies for the application under test so they can be set by the calling Cypress flow for the duration of the test.
 
-# Fork to sleeek
-
-Add provider for slack. 
 
 ## Support
 
@@ -31,11 +29,8 @@ Supported identity providers:
 
 | Provider | Plugin name       |
 | -------- | ----------------- |
-| Google   | GoogleSocialLogin |
-| GitHub   | TBD               |
-| Facebook | TBD               |
-| Twitter  | TBD               |
-| LinkedIn | TBD               |
+| slack    | SlackSocialLogin  |
+
 
 # Usage
 
@@ -45,7 +40,7 @@ Supported identity providers:
 ```js
 cy.clearCookies()
 
-return cy.task('GoogleSocialLogin', socialLoginOptions).then(({cookies}) => {
+return cy.task('SlackSocialLogin', socialLoginOptions).then(({cookies}) => {
   const cookie = cookies.filter(cookie => cookie.name === cookieName).pop()
   if (cookie) {
     cy.setCookie(cookie.name, cookie.value, {
@@ -61,6 +56,17 @@ return cy.task('GoogleSocialLogin', socialLoginOptions).then(({cookies}) => {
     })
   }
 })
+```
+cypress.env.json
+```json
+{
+    "slackSocialLoginEmail":"kitano@fixstars.com",
+    "slackSocialLoginPassword":"s%ciy#vc3PZ",
+    "slackSocialLoginDomain":"fixstarsbotdev",
+    "cookieName":"sleeek_session",
+    "username" : "Kitano",
+    "workspace_full" : "Fixstars BOT DEV"
+}
 ```
 
 Options passed to the task include:
@@ -83,7 +89,7 @@ Options passed to the task include:
 Install the plugin as a dependency
 
 ```bash
-npm install --save-dev cypress-social-logins
+ npm install git+https://github.com/sleeek/cypress-social-logins.git --save-dev
 ```
 
 ## Import the plugin
@@ -92,14 +98,14 @@ Import the `cypress-social-logins` plugin definition for the specific social
 network login you are interested of, and declare a task that performs the
 login.
 
-Example:
-
+Example:   
+plugins/index.js
 ```js
-const {GoogleSocialLogin} = require('cypress-social-logins').plugins
+const {SlackSocialLogin} = require('cypress-social-logins').plugins
 
 module.exports = (on, config) => {
   on('task', {
-    GoogleSocialLogin: GoogleSocialLogin
+    SlackSocialLogin: SlackSocialLogin
   })
 }
 ```
@@ -116,43 +122,44 @@ page. Most likely that these cookies need to be set for the rest of the
 sessions in the test flow, hence the example code showing the case for
 `Cypress.Cookies.defaults`.
 
+support/common.js
 ```js
-describe('Login', () => {
-  it('Login through Google', () => {
-    const username = Cypress.env('googleSocialLoginUsername')
-    const password = Cypress.env('googleSocialLoginPassword')
-
-    const cookieName = Cypress.env('cookieName')
-    const socialLoginOptions = {
-      username,
-      password,
-      loginUrl: Cypress.env('loginUrl'),
-      headless: true,
-      logs: false,
-      loginSelector: 'a[href="/auth/auth0/google-oauth2"]',
-      postLoginSelector: '.account-panel'
+Cypress.Commands.add('socialLogin', (email, password,domain) => {
+    const cookieName = Cypress.env('cookieName') 
+    cy.visit('/signin')
+    var loginUrl=Cypress.config('baseUrl')+"signin"
+    const socialLoginOptions={
+        email,
+        password,
+        domain,
+        headless: true,
+        logs: true,
+        loginUrl,
+        loginSelector: 'a.btn-slack',
+        postLoginSelector: '#dropdownOrgs'
     }
+    
+    return cy.task('SlackSocialLogin', socialLoginOptions).then(({cookies}) => {
+      console.log('SlackSocialLogin task')
+        cy.clearCookies()
+        const cookie = cookies.filter(cookie => cookie.name === cookieName).pop()
+        if (cookie) {
+          cy.setCookie(cookie.name, cookie.value, {
+            domain: cookie.domain,
+            expiry: cookie.expires,
+            httpOnly: cookie.httpOnly,
+            path: cookie.path,
+            secure: cookie.secure
+          })
+          Cypress.Cookies.defaults({
+            whitelist: cookieName
+          })
+        }
+      })
 
-    return cy.task('GoogleSocialLogin', socialLoginOptions).then(({cookies}) => {
-      cy.clearCookies()
 
-      const cookie = cookies.filter(cookie => cookie.name === cookieName).pop()
-      if (cookie) {
-        cy.setCookie(cookie.name, cookie.value, {
-          domain: cookie.domain,
-          expiry: cookie.expires,
-          httpOnly: cookie.httpOnly,
-          path: cookie.path,
-          secure: cookie.secure
-        })
-
-        Cypress.Cookies.defaults({
-          whitelist: cookieName
-        })
-      }
-    })
-  })
 })
+
 ```
 
 # Troubleshooting
@@ -170,3 +177,6 @@ See this issue for more context: https://github.com/lirantal/cypress-social-logi
 # Author
 
 Liran Tal <liran.tal@gmail.com>
+
+# Modifier
+Junichi Kitano <kirano@fixstars.com>
