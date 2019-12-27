@@ -88,7 +88,7 @@ async function login({page, options} = {}) {
 
   await page.click(options.loginSelector)
 }
-
+/*
 async function typeUsername({page, options} = {}) {
   await page.waitForSelector('input[type="email"]')
   await page.type('input[type="email"]', options.username)
@@ -101,28 +101,36 @@ async function typePassword({page, options} = {}) {
   await page.waitForSelector('#passwordNext', {visible: true})
   await page.click('#passwordNext')
 }
-
+*/
 
 async function typeDomainforSlack({page, options} = {}) {
+  await console.log("typeDomainforSlack >>")
   await page.waitForSelector('#domain', {visible: true})
   await page.type('#domain', options.domain)
   await page.waitForSelector('#submit_team_domain', {visible: true})
+  await page.screenshot({path:'001-typeDomainforSlack.png'})
   await page.click('#submit_team_domain')
+  await console.log("<< typeDomainforSlack")
 }
 async function typeIdPasswordforSlack({page, options} = {}) {
+  await console.log("typeIdPasswordforSlack >>")
   await page.waitForSelector('#email', {visible: true})
   await page.waitForSelector('#password', {visible: true})
   await page.type('#email', options.email)
   await page.type('#password', options.password)
   await page.waitForSelector('#signin_btn', {visible: true})
+  await page.screenshot({path:'002-typeIdPasswordforSlack.png'})
   await page.click('#signin_btn')
   await page.waitForSelector('button[type="submit"]', {visible: true}) // button[data-qa="oauth_submit_button"]
+  await page.screenshot({path:'003-typeIdPasswordforSlack.png'})
   await page.click('button[type="submit"]')
+  await console.log("<< typeIdPasswordforSlack")
 }
 
 
 
 async function getCookies({page, options} = {}) {
+  await page.screenshot({path:'004-getCookies.png'})
   await page.waitForSelector(options.postLoginSelector)
 
   const cookies = options.getAllBrowserCookies
