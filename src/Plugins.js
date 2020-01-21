@@ -116,13 +116,10 @@ async function typeIdPasswordforSlack({page, options} = {}) {
   await console.log("typeIdPasswordforSlack >>")
   await page.waitForSelector('#email', {visible: true})
   await page.waitForSelector('#password', {visible: true})
-  await page.type('#email', options.email)
-  await page.waitFor(500)
-  await page.type('#password', options.password)
-  await page.waitFor(500)
+  await page.evaluate((email) => { (document.getElementById('email')).value = email; }, options.email);
+  await page.evaluate((password) => { (document.getElementById('password')).value = password; }, options.password);
   await console.log("Email: "+options.email)
   await console.log("Password: "+options.password)
-  await page.waitFor(500)
   await page.waitForSelector('#signin_btn', {visible: true})
   await page.screenshot({path:'002-typeIdPasswordforSlack.png'})
   await page.click('#signin_btn')
