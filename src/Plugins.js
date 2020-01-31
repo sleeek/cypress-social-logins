@@ -106,7 +106,7 @@ async function typePassword({page, options} = {}) {
 async function typeDomainforSlack({page, options} = {}) {
   await console.log("typeDomainforSlack >>")
   await page.waitForSelector('#domain', {visible: true})
-  await page.type('#domain', options.domain)
+  await page.evaluate((domain) => { (document.getElementById('domain')).value = domain; }, options.domain);
   await page.waitForSelector('#submit_team_domain', {visible: true})
   await page.screenshot({path:'001-typeDomainforSlack.png'})
   await page.click('#submit_team_domain')
